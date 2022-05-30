@@ -3,6 +3,7 @@ from os import get_terminal_size
 import random
 import sys
 
+
 def get_ascii_image(path: str, color: str, palette: str, fontratio: float, random_char: bool) -> str:
     img = safely_open_image(path)
 
