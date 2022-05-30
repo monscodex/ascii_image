@@ -8,8 +8,8 @@ def get_ascii_image(path, color, palette_code):
     img = Image.open(path)
 
     # Calculate image's dimensions in order to fit in the terminal without loosing its ratio
-    width, heigth = get_displaying_dimensions(img)
-    img = img.resize((width, heigth))
+    width, height = get_displaying_dimensions(img)
+    img = img.resize((width, height))
 
     ascii_representation = get_ascii_representation(img, palette_code, color)
 
@@ -19,11 +19,11 @@ def get_ascii_representation(img, palette_code, color):
     palette = get_palette_from_code(palette_code)
 
     pixels = img.load()
-    width, heigth = img.size
+    width, height = img.size
 
     text_image = ""
 
-    for y in range(heigth):
+    for y in range(height):
         for x in range(width):
             pixel = pixels[x, y]
             palette_char = get_corresponding_palette_char(pixel, palette)
@@ -68,20 +68,20 @@ def get_displaying_dimensions(img):
 
     # We are calculating the possible adapted image dimensions
     # to then prefer the one that adapts to the terminal's ratio
-    supposed_image_heigth = int(image_dimensions[1] / ratios[0])
+    supposed_image_height = int(image_dimensions[1] / ratios[0])
     supposed_image_width = int(image_dimensions[0] / ratios[1])
 
-    if supposed_image_heigth < terminal_dimensions[1]:
-        return terminal_dimensions[0], supposed_image_heigth
+    if supposed_image_height < terminal_dimensions[1]:
+        return terminal_dimensions[0], supposed_image_height
     
     # Else
     return supposed_image_width, terminal_dimensions[1]
 
 def get_image_dimensions(img):
-    width, heigth = img.size
+    width, height = img.size
 
     # Compensate for the taller font
-    heigth *= FONT_RATIO
-    heigth = int(heigth)
+    height *= FONT_RATIO
+    height = int(height)
 
-    return (width, heigth)
+    return (width, height)
