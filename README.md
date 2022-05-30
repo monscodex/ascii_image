@@ -32,4 +32,4 @@ python3 ascii_image.py print-image girl.jpg --color none --palette-code reduced
 ```bash
 python3 ascii_image.py print-image girl.jpg --color none --palette-code reduced
 ```
-![Uncolored + reduced palette](./output-examples/example_uncolored_and_reduced-palette.png)
+![Uncolored + reduced palette](./output-examples/example_tiny_fontsize.png)
