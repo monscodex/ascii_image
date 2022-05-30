@@ -73,9 +73,10 @@ def get_corresponding_palette_char(pixel : tuple[float, ...], palette : str, ran
     # The pixel is a tuple with (r, g, b) values
     gray_value = sum(pixel) / 3
 
-    # As the palette is ordered decreasingly, the more gray a 
+    # As the palette is ordered decreasingly, the more gray a pixel is the
+    # closer to the start the character will be
     palette_index =  (1 - (gray_value / 256)) * len(palette)
-    palette_index = int(palette_index)
+    palette_index = int(palette_index - 1)
 
     return palette[palette_index]
 
