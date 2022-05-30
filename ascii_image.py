@@ -2,9 +2,6 @@ from PIL import Image
 from os import get_terminal_size
 from typing import Tuple
 
-# Font ratio between the width over the hight (x/y)
-FONT_RATIO = 0.5
-
 def get_ascii_image(path, color, palette, fontratio) -> str:
     img = Image.open(path)
 
@@ -25,6 +22,9 @@ def get_ascii_representation(img, palette_option, color) -> str:
     text_image = ""
 
     for y in range(height):
+        # End of line
+        text_image += '\n'
+
         for x in range(width):
             pixel = pixels[x, y]
             palette_char = get_corresponding_palette_char(pixel, palette)
@@ -34,8 +34,6 @@ def get_ascii_representation(img, palette_option, color) -> str:
             else:
                 text_image += palette_char
         
-        # End of line
-        text_image += '\n'
 
     return text_image
 
@@ -73,7 +71,7 @@ def get_displaying_dimensions(img, fontratio) -> Tuple[int, int]:
     ]
 
     # We are calculating the possible adapted image dimensions
-    # to then prefer the one that adapts to the terminal's ratio
+    # to then prefer the one that adapts to the terminal's dimensions
     supposed_image_height = int(image_dimensions[1] / ratios[0])
     supposed_image_width = int(image_dimensions[0] / ratios[1])
 
