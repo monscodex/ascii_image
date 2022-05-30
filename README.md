@@ -112,7 +112,7 @@ Arguments:
 
 Options:
   --color [full|b&w|none]         The color compatibility you want to give the
-                                  output  [default: full]
+                                  terminal output.  [default: full]
   --palette-code [extended|standard|reduced|block]
                                   The palette code for one of the preset
                                   palettes available.  [default: standard]
@@ -123,7 +123,7 @@ Options:
                                   instead of ' .-#' .
   --random-char / --no-random-char
                                   Assign a random character from the palette
-                                  to each pixel  [default: no-random-char]
+                                  to each pixel.  [default: no-random-char]
   --fontratio FLOAT               The proportion between the width of the font
                                   to the height of the font (x/y).  [default:
                                   0.5]
