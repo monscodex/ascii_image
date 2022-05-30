@@ -1,20 +1,20 @@
 from PIL import Image, UnidentifiedImageError
 from os import get_terminal_size
-from typing import Tuple
+import random
 import sys
 
-def get_ascii_image(path, color, palette, fontratio) -> str:
+def get_ascii_image(path: str, color: str, palette: str, fontratio: float, random_char: bool) -> str:
     img = safely_open_image(path)
 
     # Calculate image's dimensions in order to fit in the terminal without loosing its ratio
     width, height = get_displaying_dimensions(img, fontratio)
     img = img.resize((width, height))
 
-    ascii_representation = get_ascii_representation(img, palette, color)
+    ascii_representation = get_ascii_representation(img, palette, color, random_char)
 
     return ascii_representation
 
-def get_ascii_representation(img, palette_option, color) -> str:
+def get_ascii_representation(img: Image, palette_option: str, color: bool, random_char: bool) -> str:
     palette = get_palette_from_option(palette_option)
 
     pixels = img.load()
@@ -28,17 +28,31 @@ def get_ascii_representation(img, palette_option, color) -> str:
 
         for x in range(width):
             pixel = pixels[x, y]
-            palette_char = get_corresponding_palette_char(pixel, palette)
+            pixel_text_conversion = get_pixel_conversion(pixel, palette, color, random_char)
 
-            if color:
-                text_image += f"\033[38;2;{pixel[0]};{pixel[1]};{pixel[2]}m{palette_char}"
-            else:
-                text_image += palette_char
-        
+            text_image += pixel_text_conversion
 
     return text_image
 
-def get_palette_from_option(palette_option) -> str:
+def get_pixel_conversion(pixel: tuple[float, ...], palette : str, color : str, random_char : bool) -> str:
+    palette_char = get_corresponding_palette_char(pixel, palette, random_char)
+
+    colored_char = color_char(palette_char, color, pixel)
+
+    return colored_char
+
+def color_char(char : str, color : bool, pixel: tuple[float, ...]) -> str:
+    match color:
+        case 'full':
+            return f"\033[38;2;{pixel[0]};{pixel[1]};{pixel[2]}m{char}"
+        case 'b&w':
+            # The pixel is a tuple with (r, g, b) values
+            grey = int(sum(pixel) / 3)
+            return f"\033[38;2;{grey};{grey};{grey}m{char}"
+        case 'none':
+            return char
+
+def get_palette_from_option(palette_option : str) -> str:
     if palette_option['specified'] != None:
         return palette_option['specified']
     
@@ -52,7 +66,10 @@ def get_palette_from_option(palette_option) -> str:
         case 'block':
             return chr(9608)
 
-def get_corresponding_palette_char(pixel, palette) -> str:
+def get_corresponding_palette_char(pixel : tuple[float, ...], palette : str, random_char : bool) -> str:
+    if random_char:
+        return random.choice(palette)
+    
     # The pixel is a tuple with (r, g, b) values
     gray_value = sum(pixel) / 3
 
@@ -62,7 +79,7 @@ def get_corresponding_palette_char(pixel, palette) -> str:
 
     return palette[palette_index]
 
-def get_displaying_dimensions(img, fontratio) -> Tuple[int, int]:
+def get_displaying_dimensions(img : Image, fontratio : float) -> tuple[int, int]:
     image_dimensions = get_image_dimensions(img, fontratio)
     terminal_dimensions = get_terminal_size()
 
@@ -82,7 +99,7 @@ def get_displaying_dimensions(img, fontratio) -> Tuple[int, int]:
     # Else
     return supposed_image_width, terminal_dimensions[1]
 
-def get_image_dimensions(img, fontratio) -> Tuple[int, int]:
+def get_image_dimensions(img : Image, fontratio : float) -> tuple[int, int]:
     width, height = img.size
 
     # Compensate for the taller font
@@ -91,7 +108,7 @@ def get_image_dimensions(img, fontratio) -> Tuple[int, int]:
 
     return (width, height)
 
-def safely_open_image(path):
+def safely_open_image(path: str) -> Image:
     try:
         return Image.open(path)
     except FileNotFoundError:
