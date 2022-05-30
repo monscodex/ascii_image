@@ -31,6 +31,8 @@ python3 ascii_image.py print-image girl.jpg --color none --palette-code reduced
 ![Uncolored + reduced palette](./output-examples/example_uncolored_and_reduced-palette.png)
 
 ### Uncolored + reduced palette + Tiny terminal fontsize
+The conversion dimensions will adapt to the terminal width and height. Thus, you change the terminal's dimensions to get a conversion with greater/less detail.
+
 ```bash
 python3 ascii_image.py print-image girl.jpg --color none --palette-code reduced
 ```
