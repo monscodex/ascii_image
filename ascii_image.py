@@ -61,7 +61,7 @@ def convert_image(
     """Save the ASCII conversion of an image into a file"""
     palette = {'code': palette_code, 'specified': palette}
 
-    ascii_image = get_ascii_image(path, color='none', palette=palette, fontratio=fontratio, random=random_char)
+    ascii_image = get_ascii_image(path, color='none', palette=palette, fontratio=fontratio, random_char=random_char)
 
     with open(output_file_path, 'w') as f:
         f.write(ascii_image)
