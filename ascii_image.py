@@ -1,9 +1,10 @@
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 from os import get_terminal_size
 from typing import Tuple
+import sys
 
 def get_ascii_image(path, color, palette, fontratio) -> str:
-    img = Image.open(path)
+    img = safely_open_image(path)
 
     # Calculate image's dimensions in order to fit in the terminal without loosing its ratio
     width, height = get_displaying_dimensions(img, fontratio)
@@ -89,3 +90,13 @@ def get_image_dimensions(img, fontratio) -> Tuple[int, int]:
     height = int(height)
 
     return (width, height)
+
+def safely_open_image(path):
+    try:
+        return Image.open(path)
+    except FileNotFoundError:
+        print(f'File not found at "{path}"')
+    except UnidentifiedImageError:
+        print(f'File at "{path}" is not an image')
+
+    sys.exit(1)
