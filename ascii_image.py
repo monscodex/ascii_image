@@ -1,10 +1,11 @@
 from PIL import Image
 from os import get_terminal_size
+from typing import Tuple
 
 # Font ratio between the width over the hight (x/y)
 FONT_RATIO = 0.5
 
-def get_ascii_image(path, color, palette, fontratio):
+def get_ascii_image(path, color, palette, fontratio) -> str:
     img = Image.open(path)
 
     # Calculate image's dimensions in order to fit in the terminal without loosing its ratio
@@ -15,7 +16,7 @@ def get_ascii_image(path, color, palette, fontratio):
 
     return ascii_representation
 
-def get_ascii_representation(img, palette_option, color):
+def get_ascii_representation(img, palette_option, color) -> str:
     palette = get_palette_from_option(palette_option)
 
     pixels = img.load()
@@ -38,7 +39,7 @@ def get_ascii_representation(img, palette_option, color):
 
     return text_image
 
-def get_palette_from_option(palette_option):
+def get_palette_from_option(palette_option) -> str:
     if palette_option['specified'] != None:
         return palette_option['specified']
     
@@ -52,7 +53,7 @@ def get_palette_from_option(palette_option):
         case 'block':
             return chr(9608)
 
-def get_corresponding_palette_char(pixel, palette):
+def get_corresponding_palette_char(pixel, palette) -> str:
     # The pixel is a tuple with (r, g, b) values
     gray_value = sum(pixel) / 3
 
@@ -62,7 +63,7 @@ def get_corresponding_palette_char(pixel, palette):
 
     return palette[palette_index]
 
-def get_displaying_dimensions(img, fontratio):
+def get_displaying_dimensions(img, fontratio) -> Tuple[int, int]:
     image_dimensions = get_image_dimensions(img, fontratio)
     terminal_dimensions = get_terminal_size()
 
@@ -82,7 +83,7 @@ def get_displaying_dimensions(img, fontratio):
     # Else
     return supposed_image_width, terminal_dimensions[1]
 
-def get_image_dimensions(img, fontratio):
+def get_image_dimensions(img, fontratio) -> Tuple[int, int]:
     width, height = img.size
 
     # Compensate for the taller font

@@ -14,9 +14,8 @@ class PaletteCode(str, Enum):
     block = "block"
 
 
-
 # Fontratio option
-def font_ratio_callback(value: float):
+def font_ratio_callback(value: float) -> float:
     if value < 0:
         raise typer.BadParameter("Negative fontratios are not possible")
     elif value == 0:
@@ -34,7 +33,7 @@ def print_image(
         palette_code : PaletteCode = "standard",
         palette : str = None,
         fontratio: float = fontratio_option
-    ):
+    ) -> None:
     palette = {'code': palette_code, 'specified': palette}
 
     ascii_image = get_ascii_image(path, color, palette, fontratio)
@@ -48,7 +47,7 @@ def convert_image(
         palette_code : PaletteCode = "standard",
         palette : str = None,
         fontratio: float = fontratio_option
-    ):
+    ) -> None:
     palette = {'code': palette_code, 'specified': palette}
 
     ascii_image = get_ascii_image(path, color=False, palette=palette, fontratio=fontratio)
