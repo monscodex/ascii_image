@@ -4,6 +4,7 @@ import typer
 from enum import Enum
 from ascii_image import get_ascii_image
 
+
 app = typer.Typer()
 
 class Palette(str, Enum):
