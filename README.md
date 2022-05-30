@@ -27,3 +27,9 @@ python3 ascii_image.py print-image girl.jpg --color 'b&w'
 python3 ascii_image.py print-image girl.jpg --color none --palette-code reduced
 ```
 ![Uncolored + reduced palette](./output-examples/example_uncolored_and_reduced-palette.png)
+
+### Uncolored + reduced palette + Tiny terminal fontsize
+```bash
+python3 ascii_image.py print-image girl.jpg --color none --palette-code reduced
+```
+![Uncolored + reduced palette](./output-examples/example_uncolored_and_reduced-palette.png)
