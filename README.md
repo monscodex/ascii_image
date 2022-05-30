@@ -38,6 +38,12 @@ python3 ascii_image.py print-image girl.jpg --color none --palette-code reduced
 ```
 ![Uncolored + reduced palette](./output-examples/example_tiny_fontsize.png)
 
+### Modified palette
+```bash
+python3 ascii_image.py print-image girl.jpg --palette ". "
+```
+![Uncolored + reduced palette](./output-examples/example_modified-palette.png)
+
 ## Converting Examples
 The program can convert images and save the conversion in a separate file
 
