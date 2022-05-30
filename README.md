@@ -93,7 +93,9 @@ Contents of output.txt:
 =+++++++++++++++*****************++=====++****###****+
 ```
 
-## Documentation
+## Documentation with --help
+
+Example with print-image
 ```bash
 python3 ascii_image.py print-image --help
 ```
