@@ -4,7 +4,8 @@ Easily and convert your images to ASCII with a CLI according to some options.
 
 ## Dependencies:
 -   **python** 3.9
--   **typer** module (```pip install typer```)
+- Python packages: ```pip install -r requirements.txt```
+
 ## Printing Examples
 
 ### Default settings
