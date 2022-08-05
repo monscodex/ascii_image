@@ -3,7 +3,7 @@
 Easily and convert your images to ASCII with a CLI according to some options.
 
 ## Dependencies:
--   **python** 3.9
+-   **python** (```>=3.9```)
 - Python packages: ```pip install -r requirements.txt```
 
 ## Printing Examples
