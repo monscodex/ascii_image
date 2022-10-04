@@ -130,3 +130,13 @@ Options:
                                   0.5]
   --help                          Show this message and exit.
 ```
+
+# Developer's note
+This project was written with clean code in mind.
+
+I explicitly decided to use typing and functional programming.
+
+I missed OOP for this project, but I just wanted to test the alternative.
+
+Have a good day,
+monscodex
