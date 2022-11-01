@@ -7,7 +7,7 @@ import sys
 from PIL.Image import Image as ImageClass
 from PIL import PyAccess
 
-from ascii_image_classes import PaletteOption, Color
+from ascii_image_classes import PaletteOption, Color, PaletteCode
 
 
 def get_ascii_image(
@@ -88,15 +88,14 @@ def get_palette_from_option(palette_option: PaletteOption) -> str:
     if palette_option.specified != None:
         return palette_option.specified
 
-    match palette_option.code:
-        case "extended":
-            return """ÆÑÊŒØMÉËÈÃÂWQBÅæ#NÁþEÄÀHKRŽœXgÐêqÛŠÕÔA€ßpmãâG¶øðé8ÚÜ$ëdÙýèÓÞÖåÿÒb¥FDñáZPäšÇàhû§ÝkŸ®S9žUTe6µOyxÎ¾f4õ5ôú&aü™2ùçw©Y£0VÍL±3ÏÌóC@nöòs¢u‰½¼‡zJƒ%¤Itocîrjv1lí=ïì<>i7†[¿?×}*{+()/»«•¬|!¡÷¦¯—^ª„”“~³º²–°­¹‹›;:’‘‚’˜ˆ¸…·¨´` """
-        case "reduced":
-            return "@%#*+=-:. "
-        case "block":
-            return chr(9608)
-        case "standard" | _:
-            return """$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,"^`'. """
+    palettes = {
+        PaletteCode.extended: """ÆÑÊŒØMÉËÈÃÂWQBÅæ#NÁþEÄÀHKRŽœXgÐêqÛŠÕÔA€ßpmãâG¶øðé8ÚÜ$ëdÙýèÓÞÖåÿÒb¥FDñáZPäšÇàhû§ÝkŸ®S9žUTe6µOyxÎ¾f4õ5ôú&aü™2ùçw©Y£0VÍL±3ÏÌóC@nöòs¢u‰½¼‡zJƒ%¤Itocîrjv1lí=ïì<>i7†[¿?×}*{+()/»«•¬|!¡÷¦¯—^ª„”“~³º²–°­¹‹›;:’‘‚’˜ˆ¸…·¨´` """,
+        PaletteCode.reduced: "@%#*+=-:. ",
+        PaletteCode.block: chr(9608),
+        PaletteCode.standard: """$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,"^`'. """,
+    }
+
+    return palettes[palette_option.code]
 
 
 def get_corresponding_palette_char(
