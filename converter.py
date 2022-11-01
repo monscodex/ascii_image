@@ -5,7 +5,6 @@ from typing import Tuple
 import sys
 
 from PIL.Image import Image as ImageClass
-from PIL import PyAccess
 
 from ascii_image_classes import PaletteOption, Color, PaletteCode
 
