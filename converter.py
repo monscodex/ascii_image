@@ -68,14 +68,14 @@ def get_pixel_conversion(
 
 def get_colored_char(char: str, color: Color, pixel: Tuple[int, int, int]) -> str:
     match color:
-        case "full":
+        case Color.full:
             return f"\033[38;2;{pixel[0]};{pixel[1]};{pixel[2]}m{char}"
-        case "b&w":
+        case Color.black_and_white:
             # The pixel is a tuple with (r, g, b) values
             grey_value = int(sum(pixel) / 3)
 
             return f"\033[38;2;{grey_value};{grey_value};{grey_value}m{char}"
-        case "none" | _:
+        case Color.none | _:
             return char
 
 
