@@ -33,17 +33,12 @@ def get_ascii_representation(
     pixels = img.load()
     width, height = img.size
 
-    lines = []
-    for y in range(height):
-        # Append an empty string as it is converted to a new line
-        lines.append("")
+    text_lines = [
+        get_pixel_line_converted_to_text(y, width, pixels, palette, color, random_char)
+        for y in range(height)
+    ]
 
-        text_line = get_pixel_line_converted_to_text(
-            y, width, pixels, palette, color, random_char
-        )
-        lines.append(text_line)
-
-    text_image = "\n".join(lines)
+    text_image = "\n".join(text_lines)
 
     return text_image
 
@@ -77,14 +72,15 @@ def get_colored_char(char: str, color: Color, pixel: Tuple[int, int, int]) -> st
             return f"\033[38;2;{pixel[0]};{pixel[1]};{pixel[2]}m{char}"
         case "b&w":
             # The pixel is a tuple with (r, g, b) values
-            grey = int(sum(pixel) / 3)
-            return f"\033[38;2;{grey};{grey};{grey}m{char}"
+            grey_value = int(sum(pixel) / 3)
+
+            return f"\033[38;2;{grey_value};{grey_value};{grey_value}m{char}"
         case "none" | _:
             return char
 
 
 def get_palette_from_option(palette_option: PaletteOption) -> str:
-    if palette_option.specified != None:
+    if palette_option.specified:
         return palette_option.specified
 
     palettes = {
@@ -150,7 +146,7 @@ def try_open_image_if_it_exists(path: str) -> ImageClass:
     try:
         return Image.open(path)
     except FileNotFoundError:
-        print(f'File not found at "{path}"')
+        print(f'Error: File not found at "{path}"')
     except UnidentifiedImageError:
         print(f'File at "{path}" is not an image')
 
