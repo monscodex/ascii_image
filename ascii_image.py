@@ -18,7 +18,7 @@ def font_ratio_callback(value: float) -> float:
 
 
 fontratio_option = typer.Option(
-    0.5,
+    0.4,
     callback=font_ratio_callback,
     help="The proportion between the width of the font to the height of the font (x/y).",
 )
