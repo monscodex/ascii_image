@@ -134,6 +134,7 @@ Options:
 ```bash
 python3 ascii_image.py convert-image --help
 ```
+```
 Usage: ascii_image.py convert-image [OPTIONS] PATH OUTPUT_FILE_PATH
 
   Save the ASCII conversion of an image into a file
