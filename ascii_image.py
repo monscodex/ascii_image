@@ -1,11 +1,15 @@
 #!/usr/bin/python3
 
 import typer
-from converter import get_ascii_image
-from ascii_image_classes import PaletteCode, PaletteOption, Color
+from converter import print_ascii_image, write_ascii_image
+from cli_option_processors import (
+    PaletteCode,
+    Color,
+    get_palette_from_code_if_empty_palette,
+    CHARACTER_COLORING_FUNCTIONS,
+)
 
 app = typer.Typer()
-
 
 # Fontratio option
 def font_ratio_callback(value: float) -> float:
@@ -15,7 +19,6 @@ def font_ratio_callback(value: float) -> float:
         raise typer.BadParameter("Null fontratios are not possible")
 
     return value
-
 
 fontratio_option = typer.Option(
     0.4,
@@ -36,6 +39,11 @@ color_option = typer.Option(
     "full", help="The color compatibility you want to give the output"
 )
 
+reduction_factor = typer.Option(
+    10.5,
+    help="The number by which you want to reduce (scale down) the dimensions of the true image. Preserves proportions."
+)
+
 
 @app.command()
 def print_image(
@@ -47,11 +55,17 @@ def print_image(
     fontratio: float = fontratio_option,
 ) -> None:
     """Print the ASCII conversion of an image into the terminal."""
-    palette_option = PaletteOption(palette, palette_code)
+    palette = get_palette_from_code_if_empty_palette(palette, palette_code)
 
-    ascii_image = get_ascii_image(path, color, palette_option, fontratio, random_char)
+    character_coloring_function = CHARACTER_COLORING_FUNCTIONS[color]
 
-    print(ascii_image)
+    print_ascii_image(
+        image_path=path,
+        character_coloring_function=character_coloring_function,
+        palette=palette,
+        fontratio=fontratio,
+        random_char=random_char,
+    )
 
 
 @app.command()
@@ -62,20 +76,22 @@ def convert_image(
     palette: str = palette_option,
     random_char: bool = random_option,
     fontratio: float = fontratio_option,
+    reduction_factor: float= reduction_factor
 ) -> None:
     """Save the ASCII conversion of an image into a file"""
-    palette_option = PaletteOption(palette, palette_code)
+    palette = get_palette_from_code_if_empty_palette(palette, palette_code)
 
-    ascii_image = get_ascii_image(
-        path,
-        color=Color("none"),
-        palette=palette_option,
-        fontratio=fontratio,
+    character_coloring_function = CHARACTER_COLORING_FUNCTIONS[Color("none")]
+
+    write_ascii_image(
+        image_path=path,
+        output_file_path=output_file_path,
+        character_coloring_function=character_coloring_function,
+        palette=palette,
         random_char=random_char,
+        fontratio=fontratio,
+        reduction_factor=reduction_factor,
     )
-
-    with open(output_file_path, "w") as f:
-        f.write(ascii_image)
 
 
 if __name__ == "__main__":

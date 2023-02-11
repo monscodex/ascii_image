@@ -1,40 +1,80 @@
 from PIL import Image, UnidentifiedImageError
 from os import get_terminal_size
 import random
-from typing import Tuple
 import sys
 
 from PIL.Image import Image as ImageClass
 
-from ascii_image_classes import PaletteOption, Color, PaletteCode
+from cli_option_processors import CharacterColoringFunction
 
 
-def get_ascii_image(
-    path: str, color: Color, palette: PaletteOption, fontratio: float, random_char: bool
-) -> str:
-    img: ImageClass = try_open_image_if_it_exists(path)
+def print_ascii_image(
+    image_path: str,
+    character_coloring_function: CharacterColoringFunction,
+    palette: str,
+    fontratio: float,
+    random_char: bool,
+):
+    image: ImageClass = try_open_image_if_it_exists(image_path)
 
-    # Calculate image's dimensions in order to fit in the terminal without loosing its ratio
-    width, height = get_displaying_dimensions(img, fontratio)
-    img = img.resize((width, height))
+    image = resize_image_in_order_to_fit_in_terminal(image, fontratio)
 
-    ascii_representation: str = get_ascii_representation(
-        img, palette, color, random_char
+    ascii_representation: str = get_image_ascii_representation(
+        image, palette, character_coloring_function, random_char
     )
 
-    return ascii_representation
+    print(ascii_representation)
 
 
-def get_ascii_representation(
-    img: ImageClass, palette_option: PaletteOption, color: Color, random_char: bool
+def write_ascii_image(
+    image_path: str,
+    output_file_path: str,
+    character_coloring_function: CharacterColoringFunction,
+    palette: str,
+    random_char: bool,
+    fontratio: float,
+    reduction_factor: float,
+):
+    image: ImageClass = try_open_image_if_it_exists(image_path)
+
+    image = reduce_image_and_compensate_fontratio_pixel_proportion_modification(
+        image, fontratio, reduction_factor
+    )
+
+    ascii_representation: str = get_image_ascii_representation(
+        image, palette, character_coloring_function, random_char
+    )
+
+    with open(output_file_path, "w") as f:
+        f.write(ascii_representation)
+
+
+def reduce_image_and_compensate_fontratio_pixel_proportion_modification(
+    image: ImageClass, fontratio: float, reduction_factor: float
+):
+    width, height = get_image_dimensions_respecting_fontratio(image, fontratio)
+
+    reduced_width = width / reduction_factor
+    reduced_height = height / reduction_factor
+
+    image = image.resize((int(reduced_width), int(reduced_height)))
+
+    return image
+
+
+def get_image_ascii_representation(
+    image: ImageClass,
+    palette: str,
+    character_coloring_function: CharacterColoringFunction,
+    random_char: bool,
 ) -> str:
-    palette = get_palette_from_option(palette_option)
-
-    pixels = img.load()
-    width, height = img.size
+    pixels = image.load()
+    width, height = image.size
 
     text_lines = [
-        get_pixel_line_converted_to_text(y, width, pixels, palette, color, random_char)
+        get_pixel_line_converted_to_text(
+            y, width, pixels, palette, character_coloring_function, random_char
+        )
         for y in range(height)
     ]
 
@@ -44,10 +84,17 @@ def get_ascii_representation(
 
 
 def get_pixel_line_converted_to_text(
-    y: int, width: int, pixels, palette: str, color: Color, random_char: bool
+    y: int,
+    width: int,
+    pixels,
+    palette: str,
+    character_coloring_function: CharacterColoringFunction,
+    random_char: bool,
 ) -> str:
     chars = [
-        get_pixel_conversion(pixels[x, y], palette, color, random_char)
+        get_pixel_conversion(
+            pixels[x, y], palette, character_coloring_function, random_char
+        )
         for x in range(width)
     ]
 
@@ -57,54 +104,30 @@ def get_pixel_line_converted_to_text(
 
 
 def get_pixel_conversion(
-    pixel: Tuple[int, int, int], palette: str, color: Color, random_char: bool
+    pixel: tuple[int, int, int],
+    palette: str,
+    character_coloring_function: CharacterColoringFunction,
+    random_char: bool,
 ) -> str:
     palette_char = get_corresponding_palette_char(pixel, palette, random_char)
 
-    colored_char = get_colored_char(palette_char, color, pixel)
+    colored_char = character_coloring_function(palette_char, pixel)
 
     return colored_char
 
 
-def get_colored_char(char: str, color: Color, pixel: Tuple[int, int, int]) -> str:
-    match color:
-        case Color.full:
-            return f"\033[38;2;{pixel[0]};{pixel[1]};{pixel[2]}m{char}"
-        case Color.black_and_white:
-            # The pixel is a tuple with (r, g, b) values
-            grey_value = int(sum(pixel) / 3)
-
-            return f"\033[38;2;{grey_value};{grey_value};{grey_value}m{char}"
-        case Color.none | _:
-            return char
-
-
-def get_palette_from_option(palette_option: PaletteOption) -> str:
-    if palette_option.specified:
-        return palette_option.specified
-
-    palettes = {
-        PaletteCode.extended: """ÆÑÊŒØMÉËÈÃÂWQBÅæ#NÁþEÄÀHKRŽœXgÐêqÛŠÕÔA€ßpmãâG¶øðé8ÚÜ$ëdÙýèÓÞÖåÿÒb¥FDñáZPäšÇàhû§ÝkŸ®S9žUTe6µOyxÎ¾f4õ5ôú&aü™2ùçw©Y£0VÍL±3ÏÌóC@nöòs¢u‰½¼‡zJƒ%¤Itocîrjv1lí=ïì<>i7†[¿?×}*{+()/»«•¬|!¡÷¦¯—^ª„”“~³º²–°­¹‹›;:’‘‚’˜ˆ¸…·¨´` """,
-        PaletteCode.reduced: "@%#*+=-:. ",
-        PaletteCode.block: chr(9608),
-        PaletteCode.standard: """$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,"^`'. """,
-    }
-
-    return palettes[palette_option.code]
-
-
 def get_corresponding_palette_char(
-    pixel: Tuple[int, int, int], palette: str, random_char: bool
+    pixel: tuple[int, int, int], palette: str, random_char: bool
 ) -> str:
     if random_char:
         return random.choice(palette)
 
     # The pixel is a tuple with (r, g, b) values
-    gray_value = sum(pixel) / 3
+    grey_value = sum(pixel) / 3
 
     # As the palette is ordered decreasingly, the more gray a pixel is the
     # closer to the start the character will be
-    palette_index = (1 - (gray_value / 256)) * len(palette)
+    palette_index = (1 - (grey_value / 256)) * len(palette)
     palette_index = int(palette_index)
 
     palette_index -= 1 if palette_index == len(palette) else 0
@@ -112,8 +135,17 @@ def get_corresponding_palette_char(
     return palette[palette_index]
 
 
-def get_displaying_dimensions(img: ImageClass, fontratio: float) -> tuple[int, int]:
-    image_dimensions = get_image_dimensions(img, fontratio)
+def resize_image_in_order_to_fit_in_terminal(
+    image: ImageClass, fontratio: float
+) -> ImageClass:
+    # Calculate image's dimensions in order to fit in the terminal without loosing its ratio
+    width, height = get_displaying_dimensions(image, fontratio)
+
+    return image.resize((width, height))
+
+
+def get_displaying_dimensions(image: ImageClass, fontratio: float) -> tuple[int, int]:
+    image_dimensions = get_image_dimensions_respecting_fontratio(image, fontratio)
     terminal_dimensions = get_terminal_size()
 
     ratios = [
@@ -128,12 +160,14 @@ def get_displaying_dimensions(img: ImageClass, fontratio: float) -> tuple[int, i
 
     if supposed_image_height < terminal_dimensions[1]:
         return terminal_dimensions[0], supposed_image_height
-    # Else
+
     return supposed_image_width, terminal_dimensions[1]
 
 
-def get_image_dimensions(img: ImageClass, fontratio: float) -> tuple[int, int]:
-    width, height = img.size
+def get_image_dimensions_respecting_fontratio(
+    image: ImageClass, fontratio: float
+) -> tuple[int, int]:
+    width, height = image.size
 
     # Compensate for the taller font
     height *= fontratio
