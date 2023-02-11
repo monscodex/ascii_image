@@ -113,7 +113,7 @@ Arguments:
 
 Options:
   --color [full|b&w|none]         The color compatibility you want to give the
-                                  terminal output.  [default: full]
+                                  output  [default: full]
   --palette-code [extended|standard|reduced|block]
                                   The palette code for one of the preset
                                   palettes available.  [default: standard]
@@ -124,10 +124,43 @@ Options:
                                   instead of ' .-#' .
   --random-char / --no-random-char
                                   Assign a random character from the palette
-                                  to each pixel.  [default: no-random-char]
+                                  to each pixel  [default: no-random-char]
   --fontratio FLOAT               The proportion between the width of the font
                                   to the height of the font (x/y).  [default:
-                                  0.5]
+                                  0.4]
+  --help                          Show this message and exit.
+```
+
+```bash
+python3 ascii_image.py convert-image --help
+```
+Usage: ascii_image.py convert-image [OPTIONS] PATH OUTPUT_FILE_PATH
+
+  Save the ASCII conversion of an image into a file
+
+Arguments:
+  PATH              [required]
+  OUTPUT_FILE_PATH  [required]
+
+Options:
+  --palette-code [extended|standard|reduced|block]
+                                  The palette code for one of the preset
+                                  palettes available.  [default: standard]
+  --palette TEXT                  The palette of characters that is going to
+                                  be used to convert each pixel into a
+                                  character. The palette should be given in
+                                  decreasing order of intensity ex: '#-. '
+                                  instead of ' .-#' .
+  --random-char / --no-random-char
+                                  Assign a random character from the palette
+                                  to each pixel  [default: no-random-char]
+  --fontratio FLOAT               The proportion between the width of the font
+                                  to the height of the font (x/y).  [default:
+                                  0.4]
+  --reduction-factor FLOAT        The number by which you want to reduce
+                                  (scale down) the dimensions of the true
+                                  image. Preserves proportions.  [default:
+                                  10.5]
   --help                          Show this message and exit.
 ```
 
